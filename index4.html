@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <title>小書怪番茄鐘</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .monster {
+            animation: float 2.5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-16px);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-[#FAFCFF] min-h-screen">
+    <!-- 導覽列開始 -->
+    <nav class="w-full flex items-center justify-between px-8 py-4 bg-white shadow-sm mb-8">
+        <div class="flex items-center gap-8">
+            <span class="text-2xl font-['Pacifico'] text-primary">
+                <img src="https://public.readdy.ai/ai/img_res/fa76a3a4d43763feac5ba72194c4a76f.jpg" alt="小怪獸"
+                    class="h-10 w-10 inline-block align-middle" />
+            </span>
+            <a href="index.html" class="px-4 py-2 text-gray-500 hover:text-pink-400">首頁</a>
+            <a href="index4.html"
+                class="px-4 py-2 text-pink-400 border-b-2 border-pink-300 rounded-b-lg font-bold">番茄鐘</a>
+            <a href="index2.php" class="px-4 py-2 text-gray-500 hover:text-pink-400">閱讀筆記</a>
+        </div>
+        <a id="userBtn" href="index0.html"
+            class="flex items-center gap-2 px-6 py-2 bg-pink-300 text-white rounded-xl text-lg font-bold hover:bg-pink-400 transition">
+            <i class="ri-user-line"></i>
+            <span id="userText">登入</span>
+        </a>
+    </nav>
+    <!-- 導覽列結束 -->
+
+    <!-- 內容置中 -->
+    <div class="flex flex-col items-center justify-center min-h-screen">
+        <!-- 以下為原本番茄鐘內容 -->
+        <div
+            class="w-full max-w-md mx-auto bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 flex flex-col items-center relative">
+            <!-- 背景小怪獸 -->
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 monster w-40 h-40 z-0">
+                <img src="https://public.readdy.ai/ai/img_res/9def561890a838d446fe43c82fb38d58.jpg"
+                    class="w-full h-full object-contain" alt="小書怪">
+            </div>
+            <div class="relative z-10 mt-20 text-center">
+                <h1 class="text-3xl font-bold text-primary mb-2">小書怪番茄鐘</h1>
+                <p class="text-gray-600 mb-6">和小書怪一起專注學習，養成好習慣！</p>
+                <div id="timer" class="text-6xl font-mono text-primary mb-6">25:00</div>
+                <div class="flex justify-center gap-4 mb-4">
+                    <button id="startBtn"
+                        class="px-6 py-2 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600 transition">開始</button>
+                    <button id="pauseBtn"
+                        class="px-6 py-2 bg-yellow-400 text-white rounded-lg font-bold hover:bg-yellow-500 transition">暫停</button>
+                    <button id="resetBtn"
+                        class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-400 transition">重設</button>
+                    <button id="settingBtn"
+                        class="px-6 py-2 bg-green-400 text-white rounded-lg font-bold hover:bg-green-500 transition flex items-center gap-1">
+                        <i class="ri-settings-3-line"></i>設定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 設定視窗 -->
+    <div id="settingModal" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 shadow-xl w-80">
+            <h2 class="text-lg font-bold mb-4 text-primary">設定番茄鐘時間</h2>
+            <label class="block mb-2 text-gray-700">分鐘數：</label>
+            <input id="minuteInput" type="number" min="1" max="120" value="25"
+                class="w-full border rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-primary" />
+            <div class="flex justify-end gap-2">
+                <button id="cancelSetting"
+                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">取消</button>
+                <button id="saveSetting" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">儲存</button>
+            </div>
+        </div>
+    </div>
+    <!-- 全頁鎖定遮罩（當其他 IP 鎖定時顯示） -->
+    <div id="lockOverlay"
+        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:60;align-items:center;justify-content:center;color:#fff;font-size:18px;">
+        <div style="max-width:560px;padding:18px;text-align:center;">
+            <div style="font-weight:700;margin-bottom:8px;">此番茄鐘正由其他使用者鎖定</div>
+            <div id="lockOverlayMsg">若要使用請等待或聯絡擁有者。</div>
+        </div>
+    </div>
+    <audio id="alarm" src="sound/dino_timer_end_sound.mp3" preload="auto"></audio>
+    <script>
+        let duration = 25 * 60; // 25分鐘
+        let timeLeft = duration;
+        let timerInterval = null;
+        let isPaused = false;
+
+        const timerDisplay = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const alarm = document.getElementById('alarm');
+        const settingBtn = document.getElementById('settingBtn');
+        const settingModal = document.getElementById('settingModal');
+        const minuteInput = document.getElementById('minuteInput');
+        const saveSetting = document.getElementById('saveSetting');
+        const cancelSetting = document.getElementById('cancelSetting');
+
+        function updateDisplay() {
+            const min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+            const sec = String(timeLeft % 60).padStart(2, '0');
+            timerDisplay.textContent = `${min}:${sec}`;
+        }
+
+        // 新增：與伺服器鎖定互動的 helper
+        async function getLockStatus() {
+            try {
+                const r = await fetch('lock_timer.php?action=status', { cache: 'no-store' });
+                return await r.json();
+            } catch (e) { return { ok: false }; }
+        }
+        // 更可靠的 requestLock（使用 POST FormData，並輸出 debug）
+        async function requestLock(durationSeconds) {
+            try {
+                const fd = new FormData();
+                fd.append('duration', String(Math.max(1, Math.floor(durationSeconds))));
+                // 使用 POST body（避免伺服器無法讀到 querystring）
+                const r = await fetch('lock_timer.php?action=lock', { method: 'POST', body: fd });
+                const j = await r.json().catch(() => null);
+                console.log('requestLock response', r.status, j);
+                return j || { ok: false };
+            } catch (e) { console.error('requestLock error', e); return { ok: false }; }
+        }
+        async function requestUnlockKeepalive() {
+            try {
+                if (navigator.sendBeacon) {
+                    // send minimal body so server sees POST
+                    const fd = new FormData();
+                    fd.append('action', 'unlock');
+                    navigator.sendBeacon('lock_timer.php?action=unlock', fd);
+                } else {
+                    fetch('lock_timer.php?action=unlock', { method: 'POST', keepalive: true }).catch(() => { });
+                }
+            } catch (e) { }
+        }
+        async function requestUnlock() {
+            try {
+                const r = await fetch('lock_timer.php?action=unlock', { method: 'POST' });
+                return await r.json();
+            } catch (e) { return { ok: false }; }
+        }
+
+        function showLockOverlay(msg) {
+            const o = document.getElementById('lockOverlay');
+            const m = document.getElementById('lockOverlayMsg');
+            if (m && msg) m.textContent = msg;
+            if (o) o.style.display = 'flex';
+        }
+        function hideLockOverlay() {
+            const o = document.getElementById('lockOverlay');
+            if (o) o.style.display = 'none';
+        }
+
+        // 改良 startTimer：更明確處理回應並回報錯誤
+        async function startTimer() {
+            if (timerInterval) return;
+            const desired = timeLeft || duration;
+            const res = await requestLock(desired);
+            console.log('startTimer lock result', res);
+            if (!res || !res.ok) {
+                if (res && res.error === 'locked') {
+                    alert('此番茄鐘已被其他 IP 鎖定，無法開始');
+                    const st = await getLockStatus();
+                    if (st && st.locked && !st.owner) {
+                        showLockOverlay('擁有者 IP: ' + (st.owner_ip || '未知') + ' 直到 ' + (st.expires_at ? new Date(st.expires_at * 1000).toLocaleString() : '未知'));
+                    }
+                } else {
+                    alert('無法取得鎖定（伺服器回應異常），請開發者檢查 console 與 network');
+                }
+                return;
+            }
+            // 確認 owner 欄位（伺服器回傳 owner:true 表示此連線成為擁有者）
+            if (res.owner === false) {
+                // 被其他人搶先鎖定
+                alert('鎖定失敗：已被其他人佔用');
+                const st = await getLockStatus();
+                if (st && st.locked && !st.owner) showLockOverlay('擁有者 IP: ' + (st.owner_ip || '未知'));
+                return;
+            }
+
+            // 取得鎖定成功（本機為 owner）
+            hideLockOverlay();
+            isPaused = false;
+            pauseBtn.textContent = '暫停';
+            timerInterval = setInterval(() => {
+                if (!isPaused) {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        alarm.play();
+                        timerDisplay.textContent = "時間到！";
+                        startBtn.disabled = false;
+                        // 計時結束自動解除鎖
+                        requestUnlock();
+                    }
+                }
+            }, 1000);
+            startBtn.disabled = true;
+        }
+
+        // 暫停/繼續
+        function togglePause() {
+            if (!timerInterval) return;
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? '繼續' : '暫停';
+        }
+
+        // 重設並解除鎖
+        async function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timeLeft = duration;
+            updateDisplay();
+            startBtn.disabled = false;
+            pauseBtn.textContent = "暫停";
+            isPaused = false;
+            await requestUnlock();
+            hideLockOverlay();
+            startBtn.disabled = false;
+            pauseBtn.disabled = false;
+            resetBtn.disabled = false;
+        }
+
+        // 設定視窗開啟/關閉與儲存
+        function openSettings() {
+            minuteInput.value = Math.round(duration / 60);
+            settingModal.classList.remove('hidden');
+            settingModal.style.display = 'flex';
+        }
+        function closeSettings() {
+            settingModal.classList.add('hidden');
+            settingModal.style.display = 'none';
+        }
+        saveSetting.addEventListener('click', function () {
+            const v = parseInt(minuteInput.value, 10) || 25;
+            duration = Math.max(1, Math.min(120, v)) * 60;
+            timeLeft = duration;
+            updateDisplay();
+            closeSettings();
+        });
+        cancelSetting.addEventListener('click', function () {
+            closeSettings();
+        });
+
+        // 在頁面載入時檢查鎖狀態並綁定按鈕事件
+        document.addEventListener('DOMContentLoaded', async function () {
+            // 綁定按鈕事件（保險做法，確保能綁定）
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', togglePause);
+            resetBtn.addEventListener('click', resetTimer);
+            settingBtn.addEventListener('click', openSettings);
+
+            // 顯示初始時間
+            updateDisplay();
+
+            // 檢查鎖狀態
+            const st = await getLockStatus();
+            if (st && st.locked && !st.owner) {
+                showLockOverlay('擁有者 IP: ' + (st.owner_ip || '未知') + ' 直到 ' + (st.expires_at ? new Date(st.expires_at * 1000).toLocaleString() : '未知'));
+                startBtn.disabled = true;
+                pauseBtn.disabled = true;
+                resetBtn.disabled = true;
+            } else {
+                hideLockOverlay();
+                startBtn.disabled = false;
+            }
+        });
+
+        // 在離開頁面時用 sendBeacon 嘗試解除鎖（避免鎖被永久佔用）
+        window.addEventListener('beforeunload', function () {
+            requestUnlockKeepalive();
+        });
+    </script>
+</body>
+
+</html>

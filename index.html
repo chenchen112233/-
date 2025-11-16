@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪獸閱讀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF9ECD',
+                        secondary: '#A5D8FF'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
+        .book-progress::-webkit-progress-bar {
+            background-color: #f3f4f6;
+            border-radius: 9999px;
+        }
+
+        .book-progress::-webkit-progress-value {
+            background-color: #FF9ECD;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-['Pacifico'] text-primary">
+                        <img src="assets/7495EA4D-A39C-4F0E-9BDB-D40EB177B48C.png" alt="小怪獸"
+                            class="h-10 w-10 inline-block align-middle" />
+                    </span>
+                    <div class="hidden sm:ml-12 sm:flex sm:space-x-8">
+                        <a href="#" class="text-primary border-b-2 border-primary px-3 py-2 rounded-md text-sm">首頁</a>
+                        <a href="http://192.168.0.55//index4.html#"
+                            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">番茄鐘</a>
+                        <a href="http://192.168.0.55//index2.php"
+                            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">閱讀筆記</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a id="userBtn" href="index0.html"
+                            class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium !rounded-button text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            <i class="ri-user-line mr-2"></i>
+                            <span id="userText">登入</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="relative bg-white overflow-hidden">
+            <div class="max-w-7xl mx-auto">
+                <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-1/2 lg:pb-28 xl:pb-32">
+                    <div class="relative pt-6 px-4 sm:px-6 lg:px-8"></div>
+                    <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                        <div class="sm:text-center lg:text-left">
+                            <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                                <span class="block xl:inline">和可愛的怪獸一起</span>
+                                <span class="block text-primary xl:inline">探索閱讀的樂趣</span>
+                            </h1>
+                            <p
+                                class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                                讓閱讀變得更有趣！和可愛的怪獸一起探索知識的海洋，記錄你的閱讀歷程，培養良好的閱讀習慣。
+                            </p>
+                            <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                                <div class="rounded-md shadow">
+                                    <a href="http://192.168.0.55//index7.php"
+                                        class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium !rounded-button text-white bg-primary hover:bg-primary/90 md:py-4 md:text-lg md:px-10">
+                                        開始作筆記
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+            <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+                <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
+                    src="assets/7495EA4D-A39C-4F0E-9BDB-D40EB177B48C.png" alt="可愛的閱讀怪獸">
+            </div>
+        </div>
+
+
+        <script>
+                (async function () {
+                    const userBtn = document.getElementById('userBtn');
+                    const userText = document.getElementById('userText');
+                    const base = window.location.origin; // ← 使用當前 origin
+
+                    async function refreshUser() {
+                        try {
+                            const r = await fetch(base + '/session.php'); // ← 改為絕對 origin
+                            const j = await r.json();
+                            if (j.ok && j.username) {
+                                userText.textContent = j.username;
+                                userBtn.href = '#';
+                                userBtn.onclick = async (e) => {
+                                    e.preventDefault();
+                                    if (!confirm('確定要登出嗎？')) return;
+                                    const out = await fetch(base + '/logout.php', { method: 'POST' }); // ← 同樣改為 origin 路徑
+                                    const jo = await out.json();
+                                    if (jo.ok) location.reload();
+                                    else alert('登出失敗');
+                                };
+                            } else {
+                                userText.textContent = '登入';
+                                userBtn.href = 'index0.html';
+                                userBtn.onclick = null;
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            userText.textContent = '登入';
+                            userBtn.href = 'index0.html';
+                        }
+                    }
+
+                    refreshUser();
+                })();
+        </script>
+</body>
+
+</html>
